@@ -257,7 +257,12 @@ public class Zuma extends Application {
         if (balls.size() != 0 && balls.get(balls.size() - 1).getTranslateY() >= Ball.getRadius() * 2) {
             //max 100 balls
             if (balls_cnt<100){
+            	//adding check for not creating 3 balls with the same color sequentially
                 Ball ball = new Ball();
+              //adding check for not creating 3 balls with the same color sequentially
+                if (balls.size() >= 2 )
+                	while(ball.getColor() == balls.get(balls.size()-1).getColor() && ball.getColor() == balls.get(balls.size()-2).getColor())
+                		ball = new Ball();
                 ball.setShield();
                 balls.add(ball);
                 root.getChildren().add(ball);
@@ -387,6 +392,100 @@ public class Zuma extends Application {
             }
         }
         shots.remove(shot);
+        
+        //Adding queue check
+        
+        for (int i = 0; i < balls.size()-2; i++)
+        {
+        	if (balls.get(i).getColor()==balls.get(i+1).getColor() && balls.get(i).getColor()==balls.get(i+2).getColor())
+        		checkQueue(balls.get(i), i);
+        }
+    }
+    
+    //logic for destroying moving balls - DO NOT CHANGE!
+    public void checkQueue(Ball shot, int j) {
+        
+        Ball hitBall = balls.get(j);
+        Ball prevBall = (j - 1 >= 0) ? balls.get(j - 1) : null;
+        Ball nextBall = (j + 1 < balls.size()) ? balls.get(j + 1) : null;
+        if (nextBall != null && shot.getColor().equals(nextBall.getColor())) {
+            j++;
+            hitBall = nextBall;
+            nextBall = (j + 1 < balls.size()) ? balls.get(j + 1) : null;
+            prevBall = (j - 1 >= 0) ? balls.get(j - 1) : null;
+        }
+        if (shot.getColor().equals(hitBall.getColor())
+                && ((prevBall != null && shot.getColor().equals(prevBall.getColor()))
+                || (nextBall != null && shot.getColor().equals(nextBall.getColor())))) {
+            root.getChildren().remove(shot);
+            int sameColorCnt = 0, k;
+            //next
+            for (k = j + 1; k < balls.size() && balls.get(k).getColor().equals(shot.getColor());k++) {
+                // counting
+            }
+            int destroyed = 0;
+            int totalCurrScore = 1;
+            if (shot.getColor()==Color.YELLOW){
+                totalCurrScore = 2;
+            }
+            for (int m = k - 1; m >= j + 1 ; m--){
+                if (!balls.get(m).checkShield()){
+                    root.getChildren().remove(balls.get(m));
+                    
+                    int currScore = 1;  
+                    if (balls.get(m).getColor()==Color.YELLOW){
+                        currScore = 2;
+                    }
+                    if (balls.get(m).getShielded()){
+                        currScore *= 2 ;
+                    }
+                    totalCurrScore += currScore;
+                    
+                    balls.remove(m);   
+                    destroyed++;          
+                }
+                else{
+                    balls.get(m).reverse(destroyed);
+                }
+                
+            }
+            //previous
+            for (k = j; k >= 0 && balls.get(k).getColor().equals(shot.getColor()); k--) {
+                if (!balls.get(k).checkShield()){
+                    root.getChildren().remove(balls.get(k));
+                    
+                    int currScore = 1;  
+                    if (balls.get(k).getColor()==Color.YELLOW){
+                        currScore = 2;
+                    }
+                    if (balls.get(k).getShielded()){
+                        currScore *=2 ;
+                    }
+                    totalCurrScore += currScore;
+                    
+                    balls.remove(k);
+                    destroyed++;
+                }
+                else{
+                    balls.get(k).reverse(destroyed);
+                }
+            }
+            //reverse
+            for (int m = k; m >= 0; m--) {
+                balls.get(m).reverse(destroyed);
+            }
+            
+            points += totalCurrScore;
+            score.setText("Score: " + points);
+        }
+
+        //Adding queue check
+        
+        for (int i = 0; i < balls.size()-2; i++)
+        {
+        	if (balls.get(i).getColor()==balls.get(i+1).getColor() && balls.get(i).getColor()==balls.get(i+2).getColor())
+        		checkQueue(balls.get(i), i);
+        }
     }
 
     public static void makeShot(Shot shot) {
