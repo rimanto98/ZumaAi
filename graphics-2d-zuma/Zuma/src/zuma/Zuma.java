@@ -285,18 +285,18 @@ public class Zuma extends Application {
         }
         
         sun.update();
-        //ako su sve kugle unistene ne moze da puca vise
+        //if all the balls are destroyed he can't shoot anymore
         if (balls.size()==0 && balls_cnt == 100){
             end = true;
             
-            //ne treba 
+            //no need 
             scene.setOnMouseClicked(null);
         }
         background.addStar(balls.get(0));
         
     }
 
-    //logika za unistavanje pokretnih kugli - NE MENJATI!
+    //logic for destroying moving balls - DO NOT CHANGE!
     public void crashLogic(Shot shot, int j) {
         
         Ball hitBall = balls.get(j);
