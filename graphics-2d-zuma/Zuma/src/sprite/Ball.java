@@ -5,6 +5,8 @@
  */
 package sprite;
 
+import it.unical.mat.embasp.languages.Id;
+import it.unical.mat.embasp.languages.Param;
 import javafx.animation.Animation;
 import javafx.animation.ScaleTransition;
 import javafx.scene.image.Image;
@@ -21,14 +23,15 @@ import zuma.Zuma;
  *
  * @author km183142m
  */
+
+@Id("ball")
 public class Ball extends Sprite {
 
-    protected static final double BALL_VELOCITY = 1.10;
+    protected static final double BALL_VELOCITY = 0.90;
     protected static final double BALL_RADIUS = 16;
     private static final int BORDER_DIVISION = 8;
 
     private static final Color[] colors = {Color.RED, Color.BLUE, Color.GREEN, Color.YELLOW};
-    protected Color color;
 
     public enum VelocityState {
         UP, DOWN, LEFT, RIGHT
@@ -44,6 +47,18 @@ public class Ball extends Sprite {
 
     private Circle shield = null;
     private ScaleTransition shieldScale;
+    
+    @Param(0)
+    protected double x;
+    
+    @Param(1)
+    protected double y;
+    
+    @Param(2)
+    protected Color color;
+    
+    @Param(3)
+    protected int position; 
     
     public Ball() {
         body = new Circle(BALL_RADIUS);
@@ -61,9 +76,51 @@ public class Ball extends Sprite {
         velocity = BALL_VELOCITY;
         setTranslateX(1 / 8.0 * Zuma.WINDOW_WIDTH);
         setTranslateY(0);
+        x = getTranslateX();
+        y = getTranslateY();
+        
+        
     }
 
-    public Color getColor() {
+    
+    
+    public int getPosition() {
+		return position;
+	}
+
+
+
+	public void setPosition(int position) {
+		this.position = position;
+	}
+
+
+
+	public double getX() {
+		return x;
+	}
+
+
+
+	public void setX(double x) {
+		this.x = x;
+	}
+
+
+
+	public double getY() {
+		return y;
+	}
+
+
+
+	public void setY(double y) {
+		this.y = y;
+	}
+
+
+
+	public Color getColor() {
         return color;
     }
 
@@ -91,21 +148,25 @@ public class Ball extends Sprite {
         switch (velocityState) {
             case UP:
                 setTranslateY(getTranslateY() + velocity);
+                y = getTranslateY();
                 checkUpdate(getTranslateY() + velocity < (Zuma.WINDOW_HEIGHT / division),
                         false, Ball.VelocityState.LEFT);
                 break;
             case DOWN:
                 setTranslateY(getTranslateY() + velocity);
+                y = getTranslateY();
                 checkUpdate(getTranslateY() + velocity > (Zuma.WINDOW_HEIGHT * (1 - 1.0 / division)),
                         false, Ball.VelocityState.RIGHT);
                 break;
             case LEFT:
                 setTranslateX(getTranslateX() + velocity);
+                x = getTranslateX();
                 checkUpdate(getTranslateX() + velocity < (Zuma.WINDOW_WIDTH / division),
                         true, Ball.VelocityState.DOWN);
                 break;
             case RIGHT:
                 setTranslateX(getTranslateX() + velocity);
+                x = getTranslateX();
                 checkUpdate(getTranslateX() + velocity > (Zuma.WINDOW_WIDTH * (1 - 1.0 / division)),
                         true, Ball.VelocityState.UP);
                 break;
