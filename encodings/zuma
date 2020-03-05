@@ -1,2 +1,6 @@
-a(1).
-b(X):-a(X).
+x(1).
+y(1).
+p(1).
+c(ffffff).
+
+ball(X,Y,C,P) | nBall(X,Y,C,P):- x(X),y(Y),c(C),p(P).

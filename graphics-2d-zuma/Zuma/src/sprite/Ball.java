@@ -57,7 +57,11 @@ public class Ball extends Sprite {
     @Param(2)
     protected Color color;
     
-    @Param(3)
+    public void setColor(Color color) {
+		this.color = color;
+	}
+
+	@Param(3)
     protected int position; 
     
     public Ball() {

@@ -7,8 +7,13 @@ import java.util.List;
 
 import it.unical.mat.embasp.base.Handler;
 import it.unical.mat.embasp.base.InputProgram;
+import it.unical.mat.embasp.base.Output;
 import it.unical.mat.embasp.languages.asp.ASPInputProgram;
+import it.unical.mat.embasp.languages.asp.ASPMapper;
+import it.unical.mat.embasp.languages.asp.AnswerSet;
+import it.unical.mat.embasp.languages.asp.AnswerSets;
 import it.unical.mat.embasp.platforms.desktop.DesktopHandler;
+import it.unical.mat.embasp.specializations.dlv.desktop.DLVDesktopService;
 import it.unical.mat.embasp.specializations.dlv2.desktop.DLV2DesktopService;
 import javafx.animation.Animation;
 import javafx.animation.AnimationTimer;
@@ -34,6 +39,7 @@ public class Zuma extends Application {
 
     public static final double WINDOW_WIDTH = 1200;
     public static final double WINDOW_HEIGHT = 700;
+    private static int frqInput = 0;
 
     private AnimationTimer timer;
 
@@ -60,6 +66,7 @@ public class Zuma extends Application {
     private static String encodingResource="encodings/zuma";
     private static Handler handler;
     
+    
     @Override
     public void start(Stage primaryStage) {
         root = new Group();
@@ -79,12 +86,6 @@ public class Zuma extends Application {
         primaryStage.setScene(scene);
         primaryStage.setResizable(false);
         primaryStage.show();
-        
-        //inizializziamo la parte di IA
-        handler = new DesktopHandler(new DLV2DesktopService("lib/dlv2"));
-		InputProgram facts= new ASPInputProgram();
-        
-		
 		
         timer = new AnimationTimer() {
             @Override
@@ -283,8 +284,54 @@ public class Zuma extends Application {
                 balls.add(ball);
                 root.getChildren().add(ball);
                 balls_cnt++;
+                if(frqInput <= 0)
+        		{
+                	
+                	handler = new DesktopHandler(new DLVDesktopService("lib/dlv2"));
+            		
+            		InputProgram  program = new ASPInputProgram();
+//            		program.addProgram(encoding);
+//            		program.addProgram(instance);
+            		program.addFilesPath(encodingResource);
+            		handler.addProgram(program);
+            		
+            		// register the class for reflection
+            		try {
+            			ASPMapper.getInstance().registerClass(Ball.class);
+            			
+            		} catch (Exception e) {
+            			e.printStackTrace();
+            		}
+            		
+            		Output o =  handler.startSync();
+            		
+            		AnswerSets answers = (AnswerSets) o;
+        			System.out.println("ok");
+
+            		for(AnswerSet a:answers.getAnswersets()){
+            			System.out.println("ok1");
+            			System.out.println(a);
+            			try {
+            				System.out.println("ok2");
+            				for(Object obj:a.getAtoms()){
+            					System.out.println("ok3");
+            					if(obj instanceof Ball)  {
+            						Ball unit = (Ball) obj;
+                					System.out.println(unit.getX()+" "+ unit.getY()+" "+unit.getColor()+ " "+ unit.getPosition());
+            					}
+            				}
+            				System.out.println();
+            			} catch (Exception e) {
+            				e.printStackTrace();
+            			} 			
+            		}
+            	}
+                
             }
-        }
+        		frqInput++;
+        		
+            }
+        
 
         balls.forEach(ball -> ball.update());
 
