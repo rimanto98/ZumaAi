@@ -28,8 +28,16 @@ public class Shot extends Ball {
         setTranslateX(sun.getTranslateX() - Sun.SUN_RADIUS / 4.0 * Math.sin(Math.toRadians(sun.getRotate())));
         setTranslateY(sun.getTranslateY() + Sun.SUN_RADIUS / 4.0 * Math.cos(Math.toRadians(sun.getRotate())));
     }
+    
+  
 
-    public void becomeMoving(Ball neighbor) {
+    public ShotState getShotState() {
+		return shotState;
+	}
+
+
+
+	public void becomeMoving(Ball neighbor) { //QUANDO ENTRA NELLA CODA = MOVING
         shotState = ShotState.MOVING;
         velocity = neighbor.velocity;
         velocityState = neighbor.velocityState;
@@ -39,6 +47,7 @@ public class Shot extends Ball {
         setTranslateY(neighbor.getTranslateY());
     }
 
+    
     @Override
     public void update() {
         if (shotState.equals(ShotState.SHOT)) {

@@ -171,8 +171,28 @@ public class Sun extends Sprite implements EventHandler<MouseEvent> {
     }
 
     @Override
-    public void handle(MouseEvent event) {
+    public void handle(MouseEvent event) {/*
         double x = event.getX(), y = event.getY();
+        double dx = getTranslateX() - x, dy = y - getTranslateY();
+        double alpha = 90 - Math.toDegrees(Math.atan(dy / dx));
+        if (x > getTranslateX()) {
+            alpha -= 180;
+        }
+        setRotate(alpha);
+        lastMoved = System.currentTimeMillis();
+        if (closingEyes!=null){
+            closingEyes.stop();
+            closingEyestr.stop();
+            eyes.setScaleY(1);
+            eyes.setTranslateY(0);
+            closingEyes = null;
+            closingEyestr = null;
+        }
+        */
+    }
+    
+    public void dirSun(int x1, int y1) {
+        double x = x1, y = y1;
         double dx = getTranslateX() - x, dy = y - getTranslateY();
         double alpha = 90 - Math.toDegrees(Math.atan(dy / dx));
         if (x > getTranslateX()) {

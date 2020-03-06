@@ -288,7 +288,7 @@ public class Zuma extends Application {
                 balls.add(ball);
                 root.getChildren().add(ball);
                 balls_cnt++;
-                if(frqAiCall == 0)
+                if(frqAiCall <= 2)
         		{
                 	
                 	handler = new DesktopHandler(new DLVDesktopService("lib/dlv2"));
@@ -306,15 +306,26 @@ public class Zuma extends Application {
             			e.printStackTrace();
             		}
             		
+            		for (int i = 0; i<balls.size();i++)
+            			try {
+    						program.addObjectInput(balls.get(i));
+    					} catch (Exception e) {
+    						e.printStackTrace();
+    					}
+            		
             		Output o =  handler.startSync();
             		
             		AnswerSets answers = (AnswerSets) o;
+            		
+            		int xShot = 0;
+            		
+            		int yShot = 0;
 
             		for(AnswerSet a:answers.getAnswersets()){
             			//System.out.println(a);
             			try {
             				for(Object obj:a.getAnswerSet()){
-            					System.out.println(obj);
+            					//System.out.println(obj);
             					Matcher m = Pattern.compile("chosenBall").matcher((CharSequence) obj);
             					
             				    if (m.find())
@@ -327,9 +338,9 @@ public class Zuma extends Application {
             				    	/*for (String value: values)
             				    		System.out.println(value);*/
             				    	
-            				    	int xShot = Integer.parseInt(values.get(0));
-            				    	int yShot = Integer.parseInt(values.get(1));
-                    				System.out.println(xShot+" "+ yShot);
+            				    	xShot = Integer.parseInt(values.get(0));
+            				    	yShot = Integer.parseInt(values.get(1));
+                    				
             				    }
             				    
             				}
@@ -337,10 +348,12 @@ public class Zuma extends Application {
             				e.printStackTrace();
             			} 			
             		}
+            		System.out.println(xShot+" "+ yShot);
+            		sun.dirSun(xShot,yShot);
+            		Zuma.makeShot(new Shot(sun));
             	}
-                
+                frqAiCall++;
             }
-        		frqAiCall++;
         		
             }
         
@@ -350,6 +363,7 @@ public class Zuma extends Application {
         for (int i = 0; i < shots.size(); i++) {
             Shot shot = shots.get(i);
             shot.update();
+            //System.out.println(shot.getShotState());
             if (shot.getTranslateX() < 0 || shot.getTranslateX() > WINDOW_WIDTH
                     || shot.getTranslateY() < 0 || shot.getTranslateY() > WINDOW_HEIGHT) {
                 root.getChildren().remove(shot);

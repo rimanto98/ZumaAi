@@ -49,10 +49,10 @@ public class Ball extends Sprite {
     private ScaleTransition shieldScale;
     
     @Param(0)
-    protected double x;
+    protected int x;
     
     @Param(1)
-    protected double y;
+    protected int y;
     
     @Param(2)
     protected Color color;
@@ -80,8 +80,8 @@ public class Ball extends Sprite {
         velocity = BALL_VELOCITY;
         setTranslateX(1 / 8.0 * Zuma.WINDOW_WIDTH);
         setTranslateY(0);
-        x = getTranslateX();
-        y = getTranslateY();
+        x = (int) getTranslateX();
+        y = (int) getTranslateY();
         
         
     }
@@ -100,25 +100,25 @@ public class Ball extends Sprite {
 
 
 
-	public double getX() {
+	public int getX() {
 		return x;
 	}
 
 
 
-	public void setX(double x) {
+	public void setX(int x) {
 		this.x = x;
 	}
 
 
 
-	public double getY() {
+	public int getY() {
 		return y;
 	}
 
 
 
-	public void setY(double y) {
+	public void setY(int y) {
 		this.y = y;
 	}
 
@@ -152,25 +152,25 @@ public class Ball extends Sprite {
         switch (velocityState) {
             case UP:
                 setTranslateY(getTranslateY() + velocity);
-                y = getTranslateY();
+                y = (int) getTranslateY();
                 checkUpdate(getTranslateY() + velocity < (Zuma.WINDOW_HEIGHT / division),
                         false, Ball.VelocityState.LEFT);
                 break;
             case DOWN:
                 setTranslateY(getTranslateY() + velocity);
-                y = getTranslateY();
+                y = (int) getTranslateY();
                 checkUpdate(getTranslateY() + velocity > (Zuma.WINDOW_HEIGHT * (1 - 1.0 / division)),
                         false, Ball.VelocityState.RIGHT);
                 break;
             case LEFT:
                 setTranslateX(getTranslateX() + velocity);
-                x = getTranslateX();
+                x = (int) getTranslateX();
                 checkUpdate(getTranslateX() + velocity < (Zuma.WINDOW_WIDTH / division),
                         true, Ball.VelocityState.DOWN);
                 break;
             case RIGHT:
                 setTranslateX(getTranslateX() + velocity);
-                x = getTranslateX();
+                x = (int) getTranslateX();
                 checkUpdate(getTranslateX() + velocity > (Zuma.WINDOW_WIDTH * (1 - 1.0 / division)),
                         true, Ball.VelocityState.UP);
                 break;
