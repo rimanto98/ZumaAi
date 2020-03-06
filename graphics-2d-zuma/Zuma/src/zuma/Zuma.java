@@ -2,8 +2,11 @@ package zuma;
 
 import java.awt.Font;
 import sprite.*;
+
 import java.util.ArrayList;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import it.unical.mat.embasp.base.Handler;
 import it.unical.mat.embasp.base.InputProgram;
@@ -35,11 +38,12 @@ import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import javafx.util.Duration;
 
+
 public class Zuma extends Application {
 
     public static final double WINDOW_WIDTH = 1200;
     public static final double WINDOW_HEIGHT = 700;
-    private static int frqInput = 0;
+    private static int frqAiCall = 0;
 
     private AnimationTimer timer;
 
@@ -284,14 +288,13 @@ public class Zuma extends Application {
                 balls.add(ball);
                 root.getChildren().add(ball);
                 balls_cnt++;
-                if(frqInput <= 0)
+                if(frqAiCall == 0)
         		{
                 	
                 	handler = new DesktopHandler(new DLVDesktopService("lib/dlv2"));
             		
             		InputProgram  program = new ASPInputProgram();
-//            		program.addProgram(encoding);
-//            		program.addProgram(instance);
+
             		program.addFilesPath(encodingResource);
             		handler.addProgram(program);
             		
@@ -306,21 +309,30 @@ public class Zuma extends Application {
             		Output o =  handler.startSync();
             		
             		AnswerSets answers = (AnswerSets) o;
-        			System.out.println("ok");
 
             		for(AnswerSet a:answers.getAnswersets()){
-            			System.out.println("ok1");
-            			System.out.println(a);
+            			//System.out.println(a);
             			try {
-            				System.out.println("ok2");
-            				for(Object obj:a.getAtoms()){
-            					System.out.println("ok3");
-            					if(obj instanceof Ball)  {
-            						Ball unit = (Ball) obj;
-                					System.out.println(unit.getX()+" "+ unit.getY()+" "+unit.getColor()+ " "+ unit.getPosition());
-            					}
+            				for(Object obj:a.getAnswerSet()){
+            					System.out.println(obj);
+            					Matcher m = Pattern.compile("chosenBall").matcher((CharSequence) obj);
+            					
+            				    if (m.find())
+            				    {
+            				    	ArrayList<String> values = new ArrayList<String>();
+            				    	Matcher m2 = Pattern.compile("[0-9]+").matcher((CharSequence) obj);
+            				    	while (m2.find())
+            				    		values.add(m2.group());
+            				    	
+            				    	/*for (String value: values)
+            				    		System.out.println(value);*/
+            				    	
+            				    	int xShot = Integer.parseInt(values.get(0));
+            				    	int yShot = Integer.parseInt(values.get(1));
+                    				System.out.println(xShot+" "+ yShot);
+            				    }
+            				    
             				}
-            				System.out.println();
             			} catch (Exception e) {
             				e.printStackTrace();
             			} 			
@@ -328,7 +340,7 @@ public class Zuma extends Application {
             	}
                 
             }
-        		frqInput++;
+        		frqAiCall++;
         		
             }
         
