@@ -82,10 +82,10 @@ public class Zuma extends Application {
         
         scene = new Scene(root, WINDOW_WIDTH, WINDOW_HEIGHT);
         scene.setOnMouseMoved(sun);
-        scene.setOnMouseClicked(k -> {
+        /*scene.setOnMouseClicked(k -> {
             Zuma.makeShot(new Shot(sun));
             sun.setRandomMouthColor();
-        });
+        });*/
         primaryStage.setTitle("ZumaAI");
         primaryStage.setScene(scene);
         primaryStage.setResizable(false);
@@ -288,7 +288,7 @@ public class Zuma extends Application {
                 balls.add(ball);
                 root.getChildren().add(ball);
                 balls_cnt++;
-                if(frqAiCall <= 2)
+                if(frqAiCall % 2 == 0)
         		{
                 	
                 	handler = new DesktopHandler(new DLVDesktopService("lib/dlv2"));
@@ -301,10 +301,11 @@ public class Zuma extends Application {
             		// register the class for reflection
             		try {
             			ASPMapper.getInstance().registerClass(Ball.class);
+            			ASPMapper.getInstance().registerClass(Sun.class);
             			
             		} catch (Exception e) {
             			e.printStackTrace();
-            		}
+            		}           	
             		
             		for (int i = 0; i<balls.size();i++)
             			try {
@@ -313,6 +314,13 @@ public class Zuma extends Application {
     						e.printStackTrace();
     					}
             		
+             		try {
+						program.addObjectInput(sun);
+					} catch (Exception e1) {
+						// TODO Auto-generated catch block
+						e1.printStackTrace();
+					}
+            		
             		Output o =  handler.startSync();
             		
             		AnswerSets answers = (AnswerSets) o;
@@ -320,6 +328,10 @@ public class Zuma extends Application {
             		int xShot = 0;
             		
             		int yShot = 0;
+            		
+            		int destPos = -1;
+            		
+            		boolean spara = false; 
 
             		for(AnswerSet a:answers.getAnswersets()){
             			//System.out.println(a);
@@ -338,8 +350,12 @@ public class Zuma extends Application {
             				    	/*for (String value: values)
             				    		System.out.println(value);*/
             				    	
+            				    	if (values.size() > 0)
+            				    		spara = true;
+            				    	
             				    	xShot = Integer.parseInt(values.get(0));
             				    	yShot = Integer.parseInt(values.get(1));
+            				    	destPos = Integer.parseInt(values.get(2));
                     				
             				    }
             				    
@@ -348,11 +364,17 @@ public class Zuma extends Application {
             				e.printStackTrace();
             			} 			
             		}
-            		System.out.println(xShot+" "+ yShot);
+            		//System.out.println(xShot+" "+ yShot+" "+destPos);
             		sun.dirSun(xShot,yShot);
-            		Zuma.makeShot(new Shot(sun));
+            		if (spara)
+            		{
+            			Zuma.makeShot(new Shot(sun));
+            			sun.setRandomMouthColor();
+            		}
             	}
-                frqAiCall++;
+                ++frqAiCall;
+                if (frqAiCall == 1000)
+                	frqAiCall = 0;
             }
         		
             }
@@ -470,14 +492,14 @@ public class Zuma extends Application {
         } else {
             if (nextBall != null) {
                 shot.becomeMoving(nextBall);
-                balls.add(j + 1, shot);
+                balls.add(j + 1,(Ball) shot);
                 for (int k = j + 2; k < balls.size(); k++) {
                     Ball hit = balls.get(k);
                     hit.reverse(1);
                 }
             } else {
                 shot.becomeMoving(balls.get(balls.size() - 1));
-                balls.add(balls.size(), shot);
+                balls.add(balls.size(),(Ball) shot);
                 shot.reverse(1);
             }
         }

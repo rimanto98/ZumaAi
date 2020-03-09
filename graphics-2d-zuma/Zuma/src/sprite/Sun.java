@@ -5,6 +5,8 @@
  */
 package sprite;
 
+import it.unical.mat.embasp.languages.Id;
+import it.unical.mat.embasp.languages.Param;
 import javafx.animation.Interpolator;
 import javafx.animation.ScaleTransition;
 import javafx.animation.Timeline;
@@ -23,6 +25,7 @@ import javafx.util.Duration;
  *
  * @author km183142m
  */
+@Id("sun")
 public class Sun extends Sprite implements EventHandler<MouseEvent> {
 
     public static final double SUN_RADIUS = 70;
@@ -31,7 +34,11 @@ public class Sun extends Sprite implements EventHandler<MouseEvent> {
 
     private Circle body;
     private Circle mouth,mouthBack;
-    private Color mouthColor, mounthColorBack;
+    
+    @Param(0)
+    private Color mouthColor;
+    
+    private Color mounthColorBack;
     private int i=0;
     private long lastMoved = 0;
     private ScaleTransition closingEyes;

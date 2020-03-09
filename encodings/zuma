@@ -1,2 +1,5 @@
-chosenBall(100,300).
-ball(1,2,3,4).
+chosenBall(X1,Y1,P,D):- ball(X,Y,C,P),ball(X1,Y1,C,P-1),sun(C), D = 1.
+
+chosenBall(X1,Y1,P,D):- ball(X1,Y1,C,P), sun(C), D=2.
+
+:~chosenBall(X1,Y1,P,D). [D@1]
