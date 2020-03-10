@@ -38,6 +38,11 @@ public class Sun extends Sprite implements EventHandler<MouseEvent> {
     @Param(0)
     private Color mouthColor;
     
+    public Sun(Color color)
+    {
+    	mouthColor = color;
+    }
+    
     private Color mounthColorBack;
     private int i=0;
     private long lastMoved = 0;

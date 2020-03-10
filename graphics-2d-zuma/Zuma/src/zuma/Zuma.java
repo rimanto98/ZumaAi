@@ -70,6 +70,8 @@ public class Zuma extends Application {
     private static String encodingResource="encodings/zuma";
     private static Handler handler;
     
+    private int cont = 0;
+    
     
     @Override
     public void start(Stage primaryStage) {
@@ -94,7 +96,7 @@ public class Zuma extends Application {
         timer = new AnimationTimer() {
             @Override
             public void handle(long now) {
-                update();  
+                update();
             }
         };
         timer.start();
@@ -111,6 +113,7 @@ public class Zuma extends Application {
         time.setX(WINDOW_WIDTH/2);
         time.setY(20);
         root.getChildren().add(time);
+        
     }
 
     public Polygon makeZ(double x,double y){
@@ -136,7 +139,6 @@ public class Zuma extends Application {
         return z;
         
     }
-    
     
     public void update() {
         if (end){
@@ -276,8 +278,8 @@ public class Zuma extends Application {
             moon.openEyes();
         }
         if (balls.size() != 0 && balls.get(balls.size() - 1).getTranslateY() >= Ball.getRadius() * 2) {
-            //max 100 balls
-            if (balls_cnt<25){
+            //max 25 balls
+            if (balls_cnt<50){
                 Ball ball = new Ball();
               //adding check for not creating 3 balls with the same color sequentially
                 if (balls.size() >= 2 )
@@ -288,100 +290,119 @@ public class Zuma extends Application {
                 balls.add(ball);
                 root.getChildren().add(ball);
                 balls_cnt++;
-                if(frqAiCall % 2 == 0)
-        		{
-                	
-                	handler = new DesktopHandler(new DLVDesktopService("lib/dlv2"));
-            		
-            		InputProgram  program = new ASPInputProgram();
-
-            		program.addFilesPath(encodingResource);
-            		handler.addProgram(program);
-            		
-            		// register the class for reflection
-            		try {
-            			ASPMapper.getInstance().registerClass(Ball.class);
-            			ASPMapper.getInstance().registerClass(Sun.class);
-            			
-            		} catch (Exception e) {
-            			e.printStackTrace();
-            		}           	
-            		
-            		for (int i = 0; i<balls.size();i++)
-            			try {
-    						program.addObjectInput(balls.get(i));
-    					} catch (Exception e) {
-    						e.printStackTrace();
-    					}
-            		
-             		try {
-						program.addObjectInput(sun);
-					} catch (Exception e1) {
-						// TODO Auto-generated catch block
-						e1.printStackTrace();
-					}
-            		
-            		Output o =  handler.startSync();
-            		
-            		AnswerSets answers = (AnswerSets) o;
-            		
-            		int xShot = 0;
-            		
-            		int yShot = 0;
-            		
-            		int destPos = -1;
-            		
-            		boolean spara = false; 
-
-            		for(AnswerSet a:answers.getAnswersets()){
-            			//System.out.println(a);
-            			try {
-            				for(Object obj:a.getAnswerSet()){
-            					//System.out.println(obj);
-            					Matcher m = Pattern.compile("chosenBall").matcher((CharSequence) obj);
-            					
-            				    if (m.find())
-            				    {
-            				    	ArrayList<String> values = new ArrayList<String>();
-            				    	Matcher m2 = Pattern.compile("[0-9]+").matcher((CharSequence) obj);
-            				    	while (m2.find())
-            				    		values.add(m2.group());
-            				    	
-            				    	/*for (String value: values)
-            				    		System.out.println(value);*/
-            				    	
-            				    	if (values.size() > 0)
-            				    		spara = true;
-            				    	
-            				    	xShot = Integer.parseInt(values.get(0));
-            				    	yShot = Integer.parseInt(values.get(1));
-            				    	destPos = Integer.parseInt(values.get(2));
-                    				
-            				    }
-            				    
-            				}
-            			} catch (Exception e) {
-            				e.printStackTrace();
-            			} 			
-            		}
-            		//System.out.println(xShot+" "+ yShot+" "+destPos);
-            		sun.dirSun(xShot,yShot);
-            		if (spara)
-            		{
-            			Zuma.makeShot(new Shot(sun));
-            			sun.setRandomMouthColor();
-            		}
-            	}
-                ++frqAiCall;
-                if (frqAiCall == 1000)
-                	frqAiCall = 0;
             }
-        		
-            }
-        
+            
+            
+        }    
 
         balls.forEach(ball -> ball.update());
+        
+        //System.out.println(frqAiCall);
+        if(frqAiCall%50 == 0)
+		{
+        	
+        	handler = new DesktopHandler(new DLVDesktopService("lib/dlv2"));
+    		
+    		InputProgram  program = new ASPInputProgram();
 
+    		program.addFilesPath(encodingResource);
+    		handler.addProgram(program);
+    		
+    		// register the class for reflection
+    		try {
+    			ASPMapper.getInstance().registerClass(Ball.class);
+    			ASPMapper.getInstance().registerClass(Sun.class);
+    			
+    		} catch (Exception e) {
+    			e.printStackTrace();
+    		}           	
+    		
+    		
+    		for (int i = 0; i<balls.size();i++)
+    		{
+    			try {
+					program.addObjectInput(new Ball(balls.get(i).getX(),balls.get(i).getY(),balls.get(i).getColor(),balls.get(i).getPosition()));
+				} catch (Exception e) {
+					System.out.println(1);
+					e.printStackTrace();
+				}
+    		}
+    		
+     		try {
+				program.addObjectInput(sun);
+			} catch (Exception e1) {
+				e1.printStackTrace();
+			}
+    		
+    		Output o =  handler.startSync();
+    		
+    		AnswerSets answers = (AnswerSets) o;
+    		
+    		int xShot = 0;
+    		
+    		int yShot = 0;
+    		
+    		int destPos = -1;
+    		
+    		boolean spara = false; 
+
+    		for(AnswerSet a:answers.getAnswersets()){
+    			//System.out.println(a);
+    			try {
+    				for(Object obj:a.getAnswerSet()){
+    					//System.out.println(obj);
+    					Matcher m = Pattern.compile("chosenBall").matcher((CharSequence) obj);
+    					
+    				    if (m.find())
+    				    {
+    				    	ArrayList<String> values = new ArrayList<String>();
+    				    	Matcher m2 = Pattern.compile("[0-9]+").matcher((CharSequence) obj);
+    				    	while (m2.find())
+    				    		values.add(m2.group());
+    				    	
+    				    	/*for (String value: values)
+    				    		System.out.println(value);*/
+    				    	
+    				    	if (values.size() > 0)
+    				    		spara = true;
+    				    	
+    				    	xShot = Integer.parseInt(values.get(0));
+    				    	yShot = Integer.parseInt(values.get(1));
+    				    	destPos = Integer.parseInt(values.get(2));
+            				
+    				    }
+    				    
+    				}
+    			} catch (Exception e) {
+    				e.printStackTrace();
+    			} 			
+    		}
+    		System.out.println("ASP: "+xShot+" "+ yShot+" "+destPos);
+    		sun.dirSun(xShot,yShot);
+    		
+    		if (spara /*&& cont == 0*/)
+    		{
+    			Zuma.makeShot(new Shot(sun));
+    			sun.setRandomMouthColor();
+    			//cont++;
+    		}
+    		
+    		if (!spara)
+    		{
+    			sun.dirSun(1980,0);
+    			Zuma.makeShot(new Shot(sun));
+    			sun.setRandomMouthColor();
+    		}
+    	}
+        ++frqAiCall;
+        if (frqAiCall == 1000)
+        	frqAiCall = 0;
+        
+        for (Ball b:balls)
+        	System.out.println(b.getX()+" "+b.getY());
+
+        //balls update prev
+        
         for (int i = 0; i < shots.size(); i++) {
             Shot shot = shots.get(i);
             shot.update();
@@ -402,7 +423,7 @@ public class Zuma extends Application {
         
         sun.update();
         //if all the balls are destroyed he can't shoot anymore
-        if (balls.size()==0 && balls_cnt == 25){
+        if (balls.size()==0 && balls_cnt == 50){
             end = true;
             
             //no need 

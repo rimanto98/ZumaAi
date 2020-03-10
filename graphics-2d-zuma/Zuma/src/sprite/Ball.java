@@ -63,6 +63,14 @@ public class Ball extends Sprite {
 
 	@Param(3)
     protected int position; 
+	
+	public Ball(int x, int y, Color color, int position)
+	{
+		this.x = x;
+		this.y = y;
+		this.color = color;
+		this.position = position;
+	}
     
     public Ball() {
         body = new Circle(BALL_RADIUS);
