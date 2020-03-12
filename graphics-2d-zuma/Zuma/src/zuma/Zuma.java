@@ -398,8 +398,8 @@ public class Zuma extends Application {
         if (frqAiCall == 1000)
         	frqAiCall = 0;
         
-        for (Ball b:balls)
-        	System.out.println(b.getX()+" "+b.getY());
+        /*for (Ball b:balls)
+        	System.out.println(b.getTranslateX()+" "+b.getTranslateY());*/
 
         //balls update prev
         

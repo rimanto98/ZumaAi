@@ -21,6 +21,7 @@ public class Shot extends Ball {
     private ShotState shotState = ShotState.SHOT;
 
     public Shot(Sun sun) {
+    	super();
         this.color = sun.getMouthColor();
         this.body.setFill(color);
         velocityX = SHOT_VELOCITY * Math.sin(Math.toRadians(sun.getRotate()));
