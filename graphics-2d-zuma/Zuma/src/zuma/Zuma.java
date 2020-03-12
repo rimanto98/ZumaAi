@@ -321,7 +321,7 @@ public class Zuma extends Application {
     		for (int i = 0; i<balls.size();i++)
     		{
     			try {
-					program.addObjectInput(new Ball(balls.get(i).getX(),balls.get(i).getY(),balls.get(i).getColor(),balls.get(i).getPosition()));
+					program.addObjectInput(new Ball((int)balls.get(i).getTranslateX(),(int)balls.get(i).getTranslateY(),balls.get(i).getColor(),balls.get(i).getPosition()));
 				} catch (Exception e) {
 					System.out.println(1);
 					e.printStackTrace();
