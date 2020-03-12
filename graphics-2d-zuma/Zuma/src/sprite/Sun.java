@@ -26,7 +26,7 @@ import javafx.util.Duration;
  * @author km183142m
  */
 @Id("sun")
-public class Sun extends Sprite implements EventHandler<MouseEvent> {
+public class Sun extends Sprite {
 
     public static final double SUN_RADIUS = 70;
 
@@ -182,7 +182,7 @@ public class Sun extends Sprite implements EventHandler<MouseEvent> {
         }
     }
 
-    @Override
+    /*@Override
     public void handle(MouseEvent event) {/*
         double x = event.getX(), y = event.getY();
         double dx = getTranslateX() - x, dy = y - getTranslateY();
@@ -200,8 +200,8 @@ public class Sun extends Sprite implements EventHandler<MouseEvent> {
             closingEyes = null;
             closingEyestr = null;
         }
-        */
-    }
+        
+    }*/
     
     public void dirSun(int x1, int y1) {
         double x = x1, y = y1;

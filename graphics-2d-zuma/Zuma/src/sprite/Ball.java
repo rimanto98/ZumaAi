@@ -27,7 +27,7 @@ import zuma.Zuma;
 @Id("ball")
 public class Ball extends Sprite {
 
-    protected static final double BALL_VELOCITY = 0.90;
+    protected static final double BALL_VELOCITY = 0.9;
     protected static final double BALL_RADIUS = 16;
     private static final int BORDER_DIVISION = 8;
 
@@ -160,25 +160,21 @@ public class Ball extends Sprite {
         switch (velocityState) {
             case UP:
                 setTranslateY(getTranslateY() + velocity);
-                y = (int) getTranslateY();
                 checkUpdate(getTranslateY() + velocity < (Zuma.WINDOW_HEIGHT / division),
                         false, Ball.VelocityState.LEFT);
                 break;
             case DOWN:
                 setTranslateY(getTranslateY() + velocity);
-                y = (int) getTranslateY();
                 checkUpdate(getTranslateY() + velocity > (Zuma.WINDOW_HEIGHT * (1 - 1.0 / division)),
                         false, Ball.VelocityState.RIGHT);
                 break;
             case LEFT:
                 setTranslateX(getTranslateX() + velocity);
-                x = (int) getTranslateX();
                 checkUpdate(getTranslateX() + velocity < (Zuma.WINDOW_WIDTH / division),
                         true, Ball.VelocityState.DOWN);
                 break;
             case RIGHT:
                 setTranslateX(getTranslateX() + velocity);
-                x = (int) getTranslateX();
                 checkUpdate(getTranslateX() + velocity > (Zuma.WINDOW_WIDTH * (1 - 1.0 / division)),
                         true, Ball.VelocityState.UP);
                 break;
@@ -194,7 +190,6 @@ public class Ball extends Sprite {
                 switch (velocityState) {
                     case UP:
                         setTranslateY(getTranslateY() - velocity);
-                        y = (int) getTranslateY();
                         if (getTranslateY() - velocity > (Zuma.WINDOW_HEIGHT * (1.0 - 1.0 / division))) {
                             cnt++;
                             velocityState = Ball.VelocityState.RIGHT;
@@ -203,7 +198,6 @@ public class Ball extends Sprite {
                         break;
                     case DOWN:
                         setTranslateY(getTranslateY() - velocity);
-                        y = (int) getTranslateY();
                         if (cnt < BORDER_DIVISION - 1 && getTranslateY() - velocity < (Zuma.WINDOW_HEIGHT / division)) {
                             cnt++;
                             velocityState = Ball.VelocityState.LEFT;
@@ -212,7 +206,6 @@ public class Ball extends Sprite {
                         break;
                     case LEFT:
                         setTranslateX(getTranslateX() - velocity);
-                        x = (int) getTranslateX();
                         if (getTranslateX() - velocity > (Zuma.WINDOW_WIDTH * (1.0 - 1.0 / division))) {
                             cnt++;
                             velocityState = Ball.VelocityState.UP;
@@ -220,7 +213,6 @@ public class Ball extends Sprite {
                         break;
                     case RIGHT:
                         setTranslateX(getTranslateX() - velocity);
-                        x = (int) getTranslateX();
                         if (cnt < BORDER_DIVISION - 1 && getTranslateX() - velocity < Zuma.WINDOW_WIDTH / division) {
                             cnt++;
                             velocityState = Ball.VelocityState.DOWN;

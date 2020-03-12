@@ -83,7 +83,7 @@ public class Zuma extends Application {
         root.getChildren().addAll(background, sun, moon, balls.get(0));
         
         scene = new Scene(root, WINDOW_WIDTH, WINDOW_HEIGHT);
-        scene.setOnMouseMoved(sun);
+        //scene.setOnMouseMoved(sun);
         /*scene.setOnMouseClicked(k -> {
             Zuma.makeShot(new Shot(sun));
             sun.setRandomMouthColor();
@@ -279,7 +279,7 @@ public class Zuma extends Application {
         }
         if (balls.size() != 0 && balls.get(balls.size() - 1).getTranslateY() >= Ball.getRadius() * 2) {
             //max 25 balls
-            if (balls_cnt<50){
+            if (balls_cnt<400){
                 Ball ball = new Ball();
               //adding check for not creating 3 balls with the same color sequentially
                 if (balls.size() >= 2 )
@@ -359,7 +359,7 @@ public class Zuma extends Application {
     				    	Matcher m2 = Pattern.compile("[0-9]+").matcher((CharSequence) obj);
     				    	while (m2.find())
     				    		values.add(m2.group());
-    				    	
+ 
     				    	/*for (String value: values)
     				    		System.out.println(value);*/
     				    	
@@ -377,29 +377,29 @@ public class Zuma extends Application {
     				e.printStackTrace();
     			} 			
     		}
-    		System.out.println("ASP: "+xShot+" "+ yShot+" "+destPos);
+    		System.out.println("AS: "+xShot+" "+ yShot+" "+destPos);
     		sun.dirSun(xShot,yShot);
     		
-    		if (spara /*&& cont == 0*/)
+    		if (spara /*&& cont == 0*/ && balls_cnt > 4)
     		{
     			Zuma.makeShot(new Shot(sun));
     			sun.setRandomMouthColor();
     			//cont++;
     		}
     		
-    		if (!spara)
+    		if (!spara && balls_cnt > 4)
     		{
-    			sun.dirSun(1980,0);
+    			sun.dirSun(750,0);
     			Zuma.makeShot(new Shot(sun));
     			sun.setRandomMouthColor();
     		}
     	}
-        ++frqAiCall;
+        frqAiCall++;
         if (frqAiCall == 1000)
         	frqAiCall = 0;
         
         /*for (Ball b:balls)
-        	System.out.println(b.getTranslateX()+" "+b.getTranslateY());*/
+        	System.out.println(balls.get(0).getTranslateX()+" "+balls.get(0).getTranslateY());*/
 
         //balls update prev
         
