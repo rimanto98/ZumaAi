@@ -1,11 +1,16 @@
 chosenBall(X1,Y1,P,D):- ball(X,Y,C,P),ball(X1,Y1,C,P-1),sun(C), D = 1.
 
-chosenBall(X1,Y1,P,D):- ball(X1,Y1,C,P), sun(C), D=2.
+chosenBall(X1,Y1,P,D):- ball(X1,Y1,C,P), sun(C), D = 2.
 
-:~chosenBall(_,_,_,D). [D@2]
+spara(X,Y,D) | notSpara(X,Y,D):- chosenBall(X,Y,_,D).
 
-%:-ball(300,Y1,_,_), chosenBall(150,Y2,_,_), Y2>Y1 , Y1 != 612.
+:- #count{X,Y,D: spara(X,Y,D)} < 1.
 
-%:-ball(X1,524,_,_), chosenBall(X2,612,_,_), X2<X1, X1 != 1050, X1 != 150.
+:~spara(_,_,D). [D@2]
 
-%:-ball(900,Y1,_,_), chosenBall(1050,Y2,_,_), Y2>Y1, Y1 != 612, Y1 != 88.
+:-ball(300,Y2,_,_), spara(150,Y1,_), Y2 != 611.
+
+:-ball(X1,524,_,_), spara(X2,611,_), X1 != 1049, X1 != 150.
+
+:-ball(899,Y1,_,_), spara(1049,Y2,_), Y1 != 611, Y1 != 88.
+

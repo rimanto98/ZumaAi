@@ -328,6 +328,8 @@ public class Zuma extends Application {
 				}
     		}
     		
+    		System.out.println((int)balls.get(0).getTranslateX()+" "+(int)balls.get(0).getTranslateY());
+    		
      		try {
 				program.addObjectInput(sun);
 			} catch (Exception e1) {
@@ -342,16 +344,16 @@ public class Zuma extends Application {
     		
     		int yShot = 0;
     		
-    		int destPos = -1;
+    		//int destPos = -1;
     		
     		boolean spara = false; 
 
     		for(AnswerSet a:answers.getAnswersets()){
-    			//System.out.println(a);
+    			System.out.println(a);
     			try {
     				for(Object obj:a.getAnswerSet()){
     					//System.out.println(obj);
-    					Matcher m = Pattern.compile("chosenBall").matcher((CharSequence) obj);
+    					Matcher m = Pattern.compile("spara").matcher((CharSequence) obj);
     					
     				    if (m.find())
     				    {
@@ -368,7 +370,7 @@ public class Zuma extends Application {
     				    	
     				    	xShot = Integer.parseInt(values.get(0));
     				    	yShot = Integer.parseInt(values.get(1));
-    				    	destPos = Integer.parseInt(values.get(2));
+    				    	//destPos = Integer.parseInt(values.get(2));
             				
     				    }
     				    
@@ -377,17 +379,17 @@ public class Zuma extends Application {
     				e.printStackTrace();
     			} 			
     		}
-    		System.out.println("AS: "+xShot+" "+ yShot+" "+destPos);
+    		System.out.println("AS: "+xShot+" "+ yShot);
     		sun.dirSun(xShot,yShot);
     		
-    		if (spara /*&& cont == 0*/ && balls_cnt > 4)
+    		if (spara /*&& cont == 0*/ && balls_cnt > 80)
     		{
     			Zuma.makeShot(new Shot(sun));
     			sun.setRandomMouthColor();
     			//cont++;
     		}
     		
-    		if (!spara && balls_cnt > 4)
+    		if (!spara && balls_cnt > 90)
     		{
     			sun.dirSun(750,0);
     			Zuma.makeShot(new Shot(sun));
@@ -398,8 +400,8 @@ public class Zuma extends Application {
         if (frqAiCall == 1000)
         	frqAiCall = 0;
         
-        /*for (Ball b:balls)
-        	System.out.println(balls.get(0).getTranslateX()+" "+balls.get(0).getTranslateY());*/
+        //for (Ball b:balls)
+        	System.out.println((int)balls.get(0).getTranslateX()+" "+(int)balls.get(0).getTranslateY());
 
         //balls update prev
         
