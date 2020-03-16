@@ -62,17 +62,40 @@ public class Ball extends Sprite {
 	}
 
 	@Param(3)
-    protected int position; 
+    protected int position;
 	
-	public Ball(int x, int y, Color color, int position)
+	@Param(4)
+	protected int isShielded;
+	
+	public Ball(int x, int y, Color color, int position,boolean scudato)
 	{
 		this.x = x;
 		this.y = y;
 		this.color = color;
 		this.position = position;
+		
+		if (scudato)
+			this.isShielded = 1;
+		else			
+			this.isShielded = 0;
+			
 	}
+	
+	
     
-    public Ball() {
+    public int getIsShielded() {
+		return isShielded;
+	}
+
+
+
+	public void setIsShielded(int isShielded) {
+		this.isShielded = isShielded;
+	}
+
+
+
+	public Ball() {
         body = new Circle(BALL_RADIUS);
         color = colors[(int) (Math.random() * colors.length)];
         Stop []stops = {
@@ -270,5 +293,12 @@ public class Ball extends Sprite {
         return cnt;
     }
     
-    
+    public boolean getScudato()
+    {
+    	if (shield!=null && shield.getFill() != Color.WHITE){
+            return true;
+        }
+    	else
+    		return false;
+    }
 }

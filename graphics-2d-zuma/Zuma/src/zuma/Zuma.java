@@ -226,8 +226,9 @@ public class Zuma extends Application {
                 
                 if (!intersected){
                     Circle coin = new Circle(x,y,20);
+                    //System.out.println(x+" "+y);
                     coin.setFill(new ImagePattern(new Image("coin.png")));
-                    TranslateTransition tt = new TranslateTransition(Duration.seconds(1),coin);
+                    TranslateTransition tt = new TranslateTransition(Duration.seconds(2),coin);
                     tt.setByY(3);
                     tt.setAutoReverse(true);
                     tt.setCycleCount((int) (Math.random()*3) + 3);
@@ -279,7 +280,7 @@ public class Zuma extends Application {
         }
         if (balls.size() != 0 && balls.get(balls.size() - 1).getTranslateY() >= Ball.getRadius() * 2) {
             //max 25 balls
-            if (balls_cnt<400){
+            if (balls_cnt<100){
                 Ball ball = new Ball();
               //adding check for not creating 3 balls with the same color sequentially
                 if (balls.size() >= 2 )
@@ -321,20 +322,30 @@ public class Zuma extends Application {
     		for (int i = 0; i<balls.size();i++)
     		{
     			try {
-					program.addObjectInput(new Ball((int)balls.get(i).getTranslateX(),(int)balls.get(i).getTranslateY(),balls.get(i).getColor(),balls.get(i).getPosition()));
+					program.addObjectInput(new Ball((int)balls.get(i).getTranslateX(),(int)balls.get(i).getTranslateY(),balls.get(i).getColor(),balls.get(i).getPosition(),balls.get(i).getScudato()));
 				} catch (Exception e) {
 					System.out.println(1);
 					e.printStackTrace();
 				}
     		}
     		
-    		System.out.println((int)balls.get(0).getTranslateX()+" "+(int)balls.get(0).getTranslateY());
+    		//System.out.println((int)balls.get(0).getTranslateX()+" "+(int)balls.get(0).getTranslateY());
     		
      		try {
 				program.addObjectInput(sun);
 			} catch (Exception e1) {
 				e1.printStackTrace();
 			}
+     		
+     		for (int i = 0; i<coins.size();i++)
+    		{
+    			try {
+					program.addObjectInput(new Coin((int)coins.get(i).getCenterX(),(int)coins.get(i).getCenterY()));
+				} catch (Exception e) {
+					System.out.println(1);
+					e.printStackTrace();
+				}
+    		}
     		
     		Output o =  handler.startSync();
     		
@@ -349,7 +360,7 @@ public class Zuma extends Application {
     		boolean spara = false; 
 
     		for(AnswerSet a:answers.getAnswersets()){
-    			System.out.println(a);
+    			//System.out.println(a);
     			try {
     				for(Object obj:a.getAnswerSet()){
     					//System.out.println(obj);
@@ -382,14 +393,14 @@ public class Zuma extends Application {
     		System.out.println("AS: "+xShot+" "+ yShot);
     		sun.dirSun(xShot,yShot);
     		
-    		if (spara /*&& cont == 0*/ && balls_cnt > 80)
+    		if (spara /*&& cont == 0*/ && balls_cnt > 10)
     		{
     			Zuma.makeShot(new Shot(sun));
     			sun.setRandomMouthColor();
     			//cont++;
     		}
     		
-    		if (!spara && balls_cnt > 90)
+    		if (!spara && balls_cnt > 10)
     		{
     			sun.dirSun(750,0);
     			Zuma.makeShot(new Shot(sun));
@@ -401,7 +412,7 @@ public class Zuma extends Application {
         	frqAiCall = 0;
         
         //for (Ball b:balls)
-        	System.out.println((int)balls.get(0).getTranslateX()+" "+(int)balls.get(0).getTranslateY());
+        	//System.out.println((int)balls.get(0).getTranslateX()+" "+(int)balls.get(0).getTranslateY());
 
         //balls update prev
         
@@ -425,7 +436,7 @@ public class Zuma extends Application {
         
         sun.update();
         //if all the balls are destroyed he can't shoot anymore
-        if (balls.size()==0 && balls_cnt == 50){
+        if (balls.size()==0 && balls_cnt == 100){
             end = true;
             
             //no need 

@@ -1,16 +1,51 @@
-chosenBall(X1,Y1,P,D):- ball(X,Y,C,P),ball(X1,Y1,C,P-1),sun(C), D = 1.
+%SPARARE A DUE SFERE DELLO STESSO COLORE
 
-chosenBall(X1,Y1,P,D):- ball(X1,Y1,C,P), sun(C), D = 2.
+%(costo 5, senza scudo)
+chosenBall(X1,Y1,5):- ball(X,Y,C,P,0),ball(X1,Y1,C,P-1,0),sun(C).
 
-spara(X,Y,D) | notSpara(X,Y,D):- chosenBall(X,Y,_,D).
+%(costo 6, una sola con scudo)
+chosenBall(X1,Y1,6):- ball(X,Y,C,P,1),ball(X1,Y1,C,P-1,0),sun(C).
+chosenBall(X1,Y1,6):- ball(X,Y,C,P,0),ball(X1,Y1,C,P-1,1),sun(C).
 
+%(costo 7, entrambe con scudo)
+chosenBall(X1,Y1,6):- ball(X,Y,C,P,1),ball(X1,Y1,C,P-1,1),sun(C).
+
+
+%SPARARE AD UNA SOLA SFERA DELLO STESSO COLORE
+%(costo 10, senza scudo)
+chosenBall(X1,Y1,10):- ball(X1,Y1,C,P,0), sun(C).
+
+%(costo 11, con scudo)
+chosenBall(X1,Y1,11):- ball(X1,Y1,C,P,1), sun(C).
+
+
+%GUESS
+spara(X,Y,D) | notSpara(X,Y,D):- chosenBall(X,Y,D).
+
+
+%ci può essere almeno uno sparo	(coda o monete)
 :- #count{X,Y,D: spara(X,Y,D)} < 1.
 
-:~spara(_,_,D). [D@2]
 
-:-ball(300,Y2,_,_), spara(150,Y1,_), Y2 != 611.
+%calcola costo dello sparo
+:~spara(_,_,D). [D@1]
 
-:-ball(X1,524,_,_), spara(X2,611,_), X1 != 1049, X1 != 150.
 
-:-ball(899,Y1,_,_), spara(1049,Y2,_), Y1 != 611, Y1 != 88.
+%non spara alle sfere dietro ad un'altra fila
+:-ball(300,Y2,_,_,_), spara(150,Y1,_), Y2 != 611.
+:-ball(X1,524,_,_,_), spara(X2,611,_), X1 != 1049, X1 != 150.
+:-ball(899,Y1,_,_,_), spara(1049,Y2,_), Y1 != 611, Y1 != 88.
 
+
+%se non ci sono spari mira ad una moneta (costo 15)
+chosenBall(X,Y,15):- coin(X,Y), #count{X,Y,D: spara(X,Y,D)} = 0.
+
+
+%non sparare alle monete a sinistra se è presente la coda davanti
+:-ball(150,Y2,_,_,_), spara(X,Y1,_), X < 150, Y2 + 100 > Y1.
+
+
+%cerca catene (costi 4 e 3)
+chosenBall(X1,Y1,4):- sun(C),ball(_,_,C,P,_),ball(X1,Y1,C,P-1,_),ball(_,_,C1,P+1,_),ball(_,_,C1,P-2,_),ball(_,_,C1,P-3,_), C != C1.
+chosenBall(X1,Y1,4):- sun(C),ball(_,_,C,P,_),ball(X1,Y1,C,P-1,_),ball(_,_,C1,P+1,_),ball(_,_,C1,P+2,_),ball(_,_,C1,P-2,_), C != C1.
+chosenBall(X1,Y1,3):- sun(C),ball(_,_,C,P,_),ball(X1,Y1,C,P-1,_),ball(_,_,C1,P+1,_),ball(_,_,C1,P+2,_),ball(_,_,C1,P-2,_),ball(_,_,C1,P-3,_), C != C1.

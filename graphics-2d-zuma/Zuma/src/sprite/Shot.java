@@ -11,7 +11,7 @@ package sprite;
  */
 public class Shot extends Ball {
 
-    private static final double SHOT_VELOCITY = -10;
+    private static final double SHOT_VELOCITY = -15;
 
     private enum ShotState {
         SHOT, MOVING
