@@ -2,8 +2,22 @@ package zuma;
 
 import java.awt.Font;
 import sprite.*;
+
 import java.util.ArrayList;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
+import it.unical.mat.embasp.base.Handler;
+import it.unical.mat.embasp.base.InputProgram;
+import it.unical.mat.embasp.base.Output;
+import it.unical.mat.embasp.languages.asp.ASPInputProgram;
+import it.unical.mat.embasp.languages.asp.ASPMapper;
+import it.unical.mat.embasp.languages.asp.AnswerSet;
+import it.unical.mat.embasp.languages.asp.AnswerSets;
+import it.unical.mat.embasp.platforms.desktop.DesktopHandler;
+import it.unical.mat.embasp.specializations.dlv.desktop.DLVDesktopService;
+import it.unical.mat.embasp.specializations.dlv2.desktop.DLV2DesktopService;
 import javafx.animation.Animation;
 import javafx.animation.AnimationTimer;
 import javafx.animation.Interpolator;
@@ -24,10 +38,12 @@ import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import javafx.util.Duration;
 
+
 public class Zuma extends Application {
 
     public static final double WINDOW_WIDTH = 1200;
     public static final double WINDOW_HEIGHT = 700;
+    private static int frqAiCall = 0;
 
     private AnimationTimer timer;
 
@@ -51,6 +67,12 @@ public class Zuma extends Application {
     private ArrayList<Circle> coins = new ArrayList<Circle>();
     private Text coinText;
     
+    private static String encodingResource="encodings/zuma";
+    private static Handler handler;
+    
+    private int cont = 0;
+    
+    
     @Override
     public void start(Stage primaryStage) {
         root = new Group();
@@ -61,19 +83,20 @@ public class Zuma extends Application {
         root.getChildren().addAll(background, sun, moon, balls.get(0));
         
         scene = new Scene(root, WINDOW_WIDTH, WINDOW_HEIGHT);
-        scene.setOnMouseMoved(sun);
-        scene.setOnMouseClicked(k -> {
+        //scene.setOnMouseMoved(sun);
+        /*scene.setOnMouseClicked(k -> {
             Zuma.makeShot(new Shot(sun));
             sun.setRandomMouthColor();
-        });
-        primaryStage.setTitle("Borba svetlosti");
+        });*/
+        primaryStage.setTitle("ZumaAI");
         primaryStage.setScene(scene);
         primaryStage.setResizable(false);
         primaryStage.show();
+		
         timer = new AnimationTimer() {
             @Override
             public void handle(long now) {
-                update();  
+                update();
             }
         };
         timer.start();
@@ -90,6 +113,7 @@ public class Zuma extends Application {
         time.setX(WINDOW_WIDTH/2);
         time.setY(20);
         root.getChildren().add(time);
+        
     }
 
     public Polygon makeZ(double x,double y){
@@ -115,7 +139,6 @@ public class Zuma extends Application {
         return z;
         
     }
-    
     
     public void update() {
         if (end){
@@ -203,8 +226,9 @@ public class Zuma extends Application {
                 
                 if (!intersected){
                     Circle coin = new Circle(x,y,20);
+                    //System.out.println(x+" "+y);
                     coin.setFill(new ImagePattern(new Image("coin.png")));
-                    TranslateTransition tt = new TranslateTransition(Duration.seconds(1),coin);
+                    TranslateTransition tt = new TranslateTransition(Duration.seconds(2),coin);
                     tt.setByY(3);
                     tt.setAutoReverse(true);
                     tt.setCycleCount((int) (Math.random()*3) + 3);
@@ -255,21 +279,147 @@ public class Zuma extends Application {
             moon.openEyes();
         }
         if (balls.size() != 0 && balls.get(balls.size() - 1).getTranslateY() >= Ball.getRadius() * 2) {
-            //max 100 balls
+            //max 25 balls
             if (balls_cnt<100){
                 Ball ball = new Ball();
+              //adding check for not creating 3 balls with the same color sequentially
+                if (balls.size() >= 2 )
+                	while(ball.getColor() == balls.get(balls.size()-1).getColor() && ball.getColor() == balls.get(balls.size()-2).getColor())
+                		ball = new Ball();
                 ball.setShield();
+                ball.setPosition(balls.size());
                 balls.add(ball);
                 root.getChildren().add(ball);
                 balls_cnt++;
             }
-        }
+            
+            
+        }    
 
         balls.forEach(ball -> ball.update());
+        
+        //System.out.println(frqAiCall);
+        if(frqAiCall%50 == 0)
+		{
+        	
+        	handler = new DesktopHandler(new DLVDesktopService("lib/dlv2"));
+    		
+    		InputProgram  program = new ASPInputProgram();
 
+    		program.addFilesPath(encodingResource);
+    		handler.addProgram(program);
+    		
+    		// register the class for reflection
+    		try {
+    			ASPMapper.getInstance().registerClass(Ball.class);
+    			ASPMapper.getInstance().registerClass(Sun.class);
+    			
+    		} catch (Exception e) {
+    			e.printStackTrace();
+    		}           	
+    		
+    		
+    		for (int i = 0; i<balls.size();i++)
+    		{
+    			try {
+					program.addObjectInput(new Ball((int)balls.get(i).getTranslateX(),(int)balls.get(i).getTranslateY(),balls.get(i).getColor(),balls.get(i).getPosition(),balls.get(i).getScudato()));
+				} catch (Exception e) {
+					System.out.println(1);
+					e.printStackTrace();
+				}
+    		}
+    		
+    		//System.out.println((int)balls.get(0).getTranslateX()+" "+(int)balls.get(0).getTranslateY());
+    		
+     		try {
+				program.addObjectInput(sun);
+			} catch (Exception e1) {
+				e1.printStackTrace();
+			}
+     		
+     		for (int i = 0; i<coins.size();i++)
+    		{
+    			try {
+					program.addObjectInput(new Coin((int)coins.get(i).getCenterX(),(int)coins.get(i).getCenterY()));
+				} catch (Exception e) {
+					System.out.println(1);
+					e.printStackTrace();
+				}
+    		}
+    		
+    		Output o =  handler.startSync();
+    		
+    		AnswerSets answers = (AnswerSets) o;
+    		
+    		int xShot = 0;
+    		
+    		int yShot = 0;
+    		
+    		//int destPos = -1;
+    		
+    		boolean spara = false; 
+
+    		for(AnswerSet a:answers.getAnswersets()){
+    			//System.out.println(a);
+    			try {
+    				for(Object obj:a.getAnswerSet()){
+    					//System.out.println(obj);
+    					Matcher m = Pattern.compile("spara").matcher((CharSequence) obj);
+    					
+    				    if (m.find())
+    				    {
+    				    	ArrayList<String> values = new ArrayList<String>();
+    				    	Matcher m2 = Pattern.compile("[0-9]+").matcher((CharSequence) obj);
+    				    	while (m2.find())
+    				    		values.add(m2.group());
+ 
+    				    	/*for (String value: values)
+    				    		System.out.println(value);*/
+    				    	
+    				    	if (values.size() > 0)
+    				    		spara = true;
+    				    	
+    				    	xShot = Integer.parseInt(values.get(0));
+    				    	yShot = Integer.parseInt(values.get(1));
+    				    	//destPos = Integer.parseInt(values.get(2));
+            				
+    				    }
+    				    
+    				}
+    			} catch (Exception e) {
+    				e.printStackTrace();
+    			} 			
+    		}
+    		System.out.println("AS: "+xShot+" "+ yShot);
+    		sun.dirSun(xShot,yShot);
+    		
+    		if (spara /*&& cont == 0*/ && balls_cnt > 10)
+    		{
+    			Zuma.makeShot(new Shot(sun));
+    			sun.setRandomMouthColor();
+    			//cont++;
+    		}
+    		
+    		if (!spara && balls_cnt > 10)
+    		{
+    			sun.dirSun(750,0);
+    			Zuma.makeShot(new Shot(sun));
+    			sun.setRandomMouthColor();
+    		}
+    	}
+        frqAiCall++;
+        if (frqAiCall == 1000)
+        	frqAiCall = 0;
+        
+        //for (Ball b:balls)
+        	//System.out.println((int)balls.get(0).getTranslateX()+" "+(int)balls.get(0).getTranslateY());
+
+        //balls update prev
+        
         for (int i = 0; i < shots.size(); i++) {
             Shot shot = shots.get(i);
             shot.update();
+            //System.out.println(shot.getShotState());
             if (shot.getTranslateX() < 0 || shot.getTranslateX() > WINDOW_WIDTH
                     || shot.getTranslateY() < 0 || shot.getTranslateY() > WINDOW_HEIGHT) {
                 root.getChildren().remove(shot);
@@ -285,20 +435,21 @@ public class Zuma extends Application {
         }
         
         sun.update();
-        //ako su sve kugle unistene ne moze da puca vise
+        //if all the balls are destroyed he can't shoot anymore
         if (balls.size()==0 && balls_cnt == 100){
             end = true;
             
-            //ne treba 
+            //no need 
             scene.setOnMouseClicked(null);
         }
-        background.addStar(balls.get(0));
+        //background.addStar(balls.get(0));
         
     }
 
-    //logika za unistavanje pokretnih kugli - NE MENJATI!
+    //logic for destroying moving balls - DO NOT CHANGE!
     public void crashLogic(Shot shot, int j) {
         
+    	//System.out.println(balls.size());
         Ball hitBall = balls.get(j);
         Ball prevBall = (j - 1 >= 0) ? balls.get(j - 1) : null;
         Ball nextBall = (j + 1 < balls.size()) ? balls.get(j + 1) : null;
@@ -375,18 +526,87 @@ public class Zuma extends Application {
         } else {
             if (nextBall != null) {
                 shot.becomeMoving(nextBall);
-                balls.add(j + 1, shot);
+                balls.add(j + 1,(Ball) shot);
                 for (int k = j + 2; k < balls.size(); k++) {
                     Ball hit = balls.get(k);
                     hit.reverse(1);
                 }
             } else {
                 shot.becomeMoving(balls.get(balls.size() - 1));
-                balls.add(balls.size(), shot);
+                balls.add(balls.size(),(Ball) shot);
                 shot.reverse(1);
             }
         }
         shots.remove(shot);
+        
+        for (int i = 0; i<balls.size();i++)
+        	balls.get(i).setPosition(i);
+        
+        //Adding queue check
+        
+        for (int i = balls.size()-1; i >= 2; i--)
+        {
+        	if (balls.get(i).getColor()==balls.get(i-1).getColor() && balls.get(i).getColor()==balls.get(i-2).getColor())
+        	{	
+        		checkQueue(balls.get(i), i);
+        		break;
+        	}
+        }
+    }
+    
+    //logic for destroying moving balls - DO NOT CHANGE!
+    public void checkQueue(Ball ball, int j) {
+        int sameColor  = 0,k;
+    	
+    	for (k = j; k >= 0 && balls.get(k).getColor().equals(ball.getColor());k--)
+    	{
+    		sameColor++;
+    	}
+    	
+    	int totalCurrScore = 0, destroyed = 0;
+    	
+    	for (k=j; k > j-sameColor; k--) {
+            if (!balls.get(k).checkShield()){
+                root.getChildren().remove(balls.get(k));
+                
+                int currScore = 1;  
+                if (balls.get(k).getColor()==Color.YELLOW){
+                    currScore = 2;
+                }
+                if (balls.get(k).getShielded()){
+                    currScore *=2 ;
+                }
+                totalCurrScore += currScore;
+                
+                balls.remove(k);
+                destroyed++;
+            }
+            else{
+                balls.get(k).reverse(destroyed);
+            }
+        }
+    	
+    	for (int m = k; m >= 0; m--) {
+            balls.get(m).reverse(destroyed);
+        }
+        
+    	
+    	points += totalCurrScore;
+        score.setText("Score: " + points);
+        
+        for (int i = 0; i<balls.size();i++)
+        	balls.get(i).setPosition(i);
+        
+        //Adding queue check
+        
+        for (int i = balls.size()-1; i >= 2; i--)
+        {
+        	if (balls.get(i).getColor()==balls.get(i-1).getColor() && balls.get(i).getColor()==balls.get(i-2).getColor())
+        	{	
+        		checkQueue(balls.get(i), i);
+        		break;
+        	}
+        }
     }
 
     public static void makeShot(Shot shot) {

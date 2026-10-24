@@ -5,6 +5,8 @@
  */
 package sprite;
 
+import it.unical.mat.embasp.languages.Id;
+import it.unical.mat.embasp.languages.Param;
 import javafx.animation.Animation;
 import javafx.animation.ScaleTransition;
 import javafx.scene.image.Image;
@@ -21,14 +23,15 @@ import zuma.Zuma;
  *
  * @author km183142m
  */
+
+@Id("ball")
 public class Ball extends Sprite {
 
-    protected static final double BALL_VELOCITY = 1.10;
+    protected static final double BALL_VELOCITY = 0.9;
     protected static final double BALL_RADIUS = 16;
     private static final int BORDER_DIVISION = 8;
 
     private static final Color[] colors = {Color.RED, Color.BLUE, Color.GREEN, Color.YELLOW};
-    protected Color color;
 
     public enum VelocityState {
         UP, DOWN, LEFT, RIGHT
@@ -45,7 +48,54 @@ public class Ball extends Sprite {
     private Circle shield = null;
     private ScaleTransition shieldScale;
     
-    public Ball() {
+    @Param(0)
+    protected int x;
+    
+    @Param(1)
+    protected int y;
+    
+    @Param(2)
+    protected Color color;
+    
+    public void setColor(Color color) {
+		this.color = color;
+	}
+
+	@Param(3)
+    protected int position;
+	
+	@Param(4)
+	protected int isShielded;
+	
+	public Ball(int x, int y, Color color, int position,boolean scudato)
+	{
+		this.x = x;
+		this.y = y;
+		this.color = color;
+		this.position = position;
+		
+		if (scudato)
+			this.isShielded = 1;
+		else			
+			this.isShielded = 0;
+			
+	}
+	
+	
+    
+    public int getIsShielded() {
+		return isShielded;
+	}
+
+
+
+	public void setIsShielded(int isShielded) {
+		this.isShielded = isShielded;
+	}
+
+
+
+	public Ball() {
         body = new Circle(BALL_RADIUS);
         color = colors[(int) (Math.random() * colors.length)];
         Stop []stops = {
@@ -61,9 +111,51 @@ public class Ball extends Sprite {
         velocity = BALL_VELOCITY;
         setTranslateX(1 / 8.0 * Zuma.WINDOW_WIDTH);
         setTranslateY(0);
+        x = (int) getTranslateX();
+        y = (int) getTranslateY();
+        
+        
     }
 
-    public Color getColor() {
+    
+    
+    public int getPosition() {
+		return position;
+	}
+
+
+
+	public void setPosition(int position) {
+		this.position = position;
+	}
+
+
+
+	public int getX() {
+		return x;
+	}
+
+
+
+	public void setX(int x) {
+		this.x = x;
+	}
+
+
+
+	public int getY() {
+		return y;
+	}
+
+
+
+	public void setY(int y) {
+		this.y = y;
+	}
+
+
+
+	public Color getColor() {
         return color;
     }
 
@@ -201,5 +293,12 @@ public class Ball extends Sprite {
         return cnt;
     }
     
-    
+    public boolean getScudato()
+    {
+    	if (shield!=null && shield.getFill() != Color.WHITE){
+            return true;
+        }
+    	else
+    		return false;
+    }
 }

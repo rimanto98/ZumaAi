@@ -5,6 +5,8 @@
  */
 package sprite;
 
+import it.unical.mat.embasp.languages.Id;
+import it.unical.mat.embasp.languages.Param;
 import javafx.animation.Interpolator;
 import javafx.animation.ScaleTransition;
 import javafx.animation.Timeline;
@@ -23,7 +25,8 @@ import javafx.util.Duration;
  *
  * @author km183142m
  */
-public class Sun extends Sprite implements EventHandler<MouseEvent> {
+@Id("sun")
+public class Sun extends Sprite {
 
     public static final double SUN_RADIUS = 70;
 
@@ -31,7 +34,16 @@ public class Sun extends Sprite implements EventHandler<MouseEvent> {
 
     private Circle body;
     private Circle mouth,mouthBack;
-    private Color mouthColor, mounthColorBack;
+    
+    @Param(0)
+    private Color mouthColor;
+    
+    public Sun(Color color)
+    {
+    	mouthColor = color;
+    }
+    
+    private Color mounthColorBack;
     private int i=0;
     private long lastMoved = 0;
     private ScaleTransition closingEyes;
@@ -170,9 +182,29 @@ public class Sun extends Sprite implements EventHandler<MouseEvent> {
         }
     }
 
-    @Override
-    public void handle(MouseEvent event) {
+    /*@Override
+    public void handle(MouseEvent event) {/*
         double x = event.getX(), y = event.getY();
+        double dx = getTranslateX() - x, dy = y - getTranslateY();
+        double alpha = 90 - Math.toDegrees(Math.atan(dy / dx));
+        if (x > getTranslateX()) {
+            alpha -= 180;
+        }
+        setRotate(alpha);
+        lastMoved = System.currentTimeMillis();
+        if (closingEyes!=null){
+            closingEyes.stop();
+            closingEyestr.stop();
+            eyes.setScaleY(1);
+            eyes.setTranslateY(0);
+            closingEyes = null;
+            closingEyestr = null;
+        }
+        
+    }*/
+    
+    public void dirSun(int x1, int y1) {
+        double x = x1, y = y1;
         double dx = getTranslateX() - x, dy = y - getTranslateY();
         double alpha = 90 - Math.toDegrees(Math.atan(dy / dx));
         if (x > getTranslateX()) {
