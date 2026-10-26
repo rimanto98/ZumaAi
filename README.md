@@ -1,4 +1,4 @@
-# ZumaAI — a game-playing agent built with Answer Set Programming
+# ZumaAI, a game-playing agent built with Answer Set Programming
 
 ZumaAI adds an automated player to a 2D JavaFX game inspired by Zuma. Its core contribution is **declarative artificial intelligence**: the game state is translated into logical facts, and an ASP solver chooses where to shoot by applying constraints and preferences expressed as rules.
 
